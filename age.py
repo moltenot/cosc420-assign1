@@ -8,8 +8,9 @@ from utils import IMAGE_SIZE
 
 DATA_DIR = './train'
 EPOCHS=100
-BATCH_SIZE = 10
+BATCH_SIZE = 32
 TRAIN_TEST_SPLIT=0.8
+PATIENCE=30
 SAVE_DIR='train-age-1/cp.ckpt'
 TFBOARD_DIR='age-logs'
 
@@ -63,7 +64,7 @@ print(model.summary())
 
 ## callbacks
 checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(SAVE_DIR)
-early_stopping_callback =  tf.keras.callbacks.EarlyStopping( monitor='val_accuracy' , patience=5 )
+early_stopping_callback =  tf.keras.callbacks.EarlyStopping( monitor='val_accuracy' , patience=PATIENCE )
 tensorboard_callback = tf.keras.callbacks.TensorBoard( log_dir=TFBOARD_DIR)
 
 model.compile(

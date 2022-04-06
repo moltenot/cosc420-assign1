@@ -13,7 +13,7 @@ def make_dataset(DATA_DIR):
     races = []
     genders = []
     count = 0
-    for im in image_paths[:8000]:
+    for im in image_paths:
         print(f"\rprocessing image {count}", end="")
         age, gender, race, image = parse_image(im)
         races.append(race)
