@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-IMAGE_SIZE=[128,128]
+IMAGE_SIZE=[100, 100]
 
 def parse_image(filename):
     image_raw = tf.io.read_file(filename)

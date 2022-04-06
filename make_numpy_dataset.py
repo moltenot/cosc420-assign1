@@ -1,14 +1,9 @@
 import os
 from utils import parse_image
-import matplotlib.pyplot as plt
 import numpy as np
 
 
 DATA_DIR = './train'
-EPOCHS = 5
-BATCH_SIZE = 10
-TRAIN_TEST_SPLIT = 0.8
-
 
 def make_dataset(DATA_DIR):
     image_paths = [os.path.join(DATA_DIR, file)
@@ -18,7 +13,7 @@ def make_dataset(DATA_DIR):
     races = []
     genders = []
     count = 0
-    for im in image_paths[:1000]:
+    for im in image_paths[:8000]:
         print(f"\rprocessing image {count}", end="")
         age, gender, race, image = parse_image(im)
         races.append(race)
