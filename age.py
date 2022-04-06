@@ -1,71 +1,69 @@
-from tensorflow import keras
+from genericpath import exists
 import os
-import datetime
-import tensorflow as tf
 import numpy as np
-import matplotlib.pyplot as plt
-from utils import parse_image_for_age, imagesize
+import tensorflow as tf
+from make_numpy_dataset import make_dataset
+from utils import IMAGE_SIZE
 
-datadir = 'UTKFace'
+DATA_DIR = './train'
+EPOCHS=5
+BATCH_SIZE = 10
+TRAIN_TEST_SPLIT=0.8
 
-dataset = tf.data.Dataset.list_files(f"{datadir}/*", shuffle=True)
-dataset = dataset.map(parse_image_for_age)
+# check if the dataset has been created yet
+if not (os.path.exists('images.npy') and os.path.exists('ages.npy')):
+    make_dataset(DATA_DIR)
 
-number_for_training = int(dataset.cardinality().numpy() * 0.8)
-train_dataset = dataset.take(number_for_training)
-test_dataset = dataset.skip(number_for_training)
+images =np.load('images.npy')
+ages=np.load('ages.npy')
 
-"""## Defining the Model
-For the age I have to change to not use a softmax output, and change the loss function to a regression
-"""
+# turn the numpy dataset into a tensorflow one
+dataset = tf.data.Dataset.from_tensor_slices((images, ages))
+dataset = dataset.shuffle(buffer_size=100).batch(BATCH_SIZE)
 
-# mostly copied from example3 of lech code
-model =tf.keras.models.Sequential()
-model.add(tf.keras.layers.Flatten())
-model.add(tf.keras.layers.Dense(128, activation='relu'))
-model.add(tf.keras.layers.Dense(1))
+# split into training and testing
+number_for_training = int(dataset.cardinality().numpy() * TRAIN_TEST_SPLIT)
+train_dataset=dataset.take(number_for_training)
+test_dataset=dataset.skip(number_for_training)
+
+print(f'train_dataset={train_dataset}')
+print(f'test_dataset={test_dataset}')
 
 
+from tensorflow import keras
 
-"""## Compiling the Model
-
-mostly following [this example](https://colab.research.google.com/github/shubham0204/Google_Colab_Notebooks/blob/main/Gender_Estimation_(W2).ipynb#scrollTo=cow71DK6kjUQ )
-
-### Callbacks
-- modelCheckpoint
-- TensorBoard
-- EarlyStopping
-"""
-
-batch_size = 32
-num_epochs = 50
-
-save_dir = 'train-age-1/cp.ckpt'
-checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(save_dir)
-
-early_stopping_callback = tf.keras.callbacks.EarlyStopping(
-    monitor='val_accuracy', patience=3)
+model = keras.models.Sequential([
+    keras.layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=IMAGE_SIZE + [3]),
+    keras.layers.BatchNormalization(),
+    keras.layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
+    keras.layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
+    keras.layers.BatchNormalization(),
+    keras.layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
+    keras.layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
+    keras.layers.BatchNormalization(),
+    keras.layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
+    keras.layers.BatchNormalization(),
+    keras.layers.Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
+    keras.layers.BatchNormalization(),
+    keras.layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
+    keras.layers.Flatten(),
+    keras.layers.Dense(4096, activation='relu'),
+    keras.layers.Dropout(0.5),
+    keras.layers.Dense(4096, activation='relu'),
+    keras.layers.Dropout(0.5),
+    keras.layers.Dense(1)
+])
+print(model.summary())
 
 
 model.compile(
     optimizer='adam',
     loss='mse',
-    metrics=['accuracy'])
-
-train_dataset = train_dataset.batch(batch_size)
-test_dataset = test_dataset.batch(batch_size)
-
-"""## Fitting the Model
-
-"""
-
-train_history = model.fit(
-    train_dataset,
-    epochs=num_epochs,
-    validation_data=test_dataset,
-    callbacks=[checkpoint_callback, early_stopping_callback]
+    metrics=['accuracy']
 )
 
-os.listdir(save_dir)
-model.load_weights(save_dir)
-loss, acc = model.evaluate(test_dataset, verbose=2)
+train_history=model.fit(
+    train_dataset,
+    epochs=EPOCHS,
+    validation_data=test_dataset,
+)

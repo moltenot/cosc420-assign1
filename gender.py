@@ -4,7 +4,7 @@ import datetime
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
-from utils import parse_image_for_gender,imagesize
+from utils import parse_image_for_gender,IMAGE_SIZE
 
 datadir = 'UTKFace'
 
@@ -33,7 +33,7 @@ removed softmax, that might have been messing stuff up
 
 model = keras.models.Sequential([
     keras.layers.Conv2D(filters=96, kernel_size=(11, 11), strides=(
-        4, 4), activation='relu', input_shape=imagesize + [3]),
+        4, 4), activation='relu', input_shape=IMAGE_SIZE + [3]),
     keras.layers.BatchNormalization(),
     keras.layers.MaxPool2D(pool_size=(3, 3), strides=(2, 2)),
     keras.layers.Conv2D(filters=256, kernel_size=(

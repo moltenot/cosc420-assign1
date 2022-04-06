@@ -1,11 +1,11 @@
 import tensorflow as tf
 
-imagesize=[128,128]
+IMAGE_SIZE=[128,128]
 
 def parse_image(filename):
     image_raw = tf.io.read_file(filename)
     im = tf.image.decode_jpeg(image_raw, channels=3)
-    im = tf.image.resize(im, imagesize) / 255
+    im = tf.image.resize(im, IMAGE_SIZE) / 255
 
     # parse the filename
     parts = tf.strings.split(tf.strings.split(filename, '/')[2], '_')
@@ -15,13 +15,3 @@ def parse_image(filename):
         parts[2], out_type=tf.dtypes.int32), 5)
 
     return age, gender, race, im
-
-
-def parse_image_for_gender(filename):
-    age, gender, race, image = parse_image(filename)
-    return image, gender
-
-
-def parse_image_for_age(filename):
-    age, gender, race, image = parse_image(filename)
-    return image, age

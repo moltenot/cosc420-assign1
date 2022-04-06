@@ -1,0 +1,4 @@
+env
+train/*
+*.npy
+__pycache__
