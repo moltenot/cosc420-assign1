@@ -1,5 +1,5 @@
 import os
-from utils import parse_image
+from utils import get_data_from_imagepaths
 import numpy as np
 
 
@@ -8,30 +8,7 @@ DATA_DIR = './train'
 def make_dataset(DATA_DIR):
     image_paths = [os.path.join(DATA_DIR, file)
                    for file in os.listdir(DATA_DIR)]
-    ages = []
-    images = []
-    races = []
-    genders = []
-    count = 0
-    for im in image_paths:
-        print(f"\rprocessing image {count}", end="")
-        age, gender, race, image = parse_image(im)
-        races.append(race)
-        genders.append(gender)
-        ages.append(age)
-        images.append(image)
-        count += 1
-    print("")
-
-    ages = np.asarray(ages)
-    images = np.asarray(images)
-    races = np.asarray(races)
-    genders = np.asarray(genders)
-
-    print(f'ages.shape={ages.shape}')
-    print(f'images.shape={images.shape}')
-    print(f'races.shape={races.shape}')
-    print(f'genders.shape={genders.shape}')
+    ages, images, races, genders = get_data_from_imagepaths(image_paths)
 
     np.save('images.npy', images)
     np.save('ages.npy', ages)

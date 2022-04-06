@@ -1,4 +1,7 @@
-.PHONY: activate
+.PHONY: activate test
+
+test:
+	. ./env/bin/activate ; python3 run_predictor.py
 
 age:
 	. ./env/bin/activate ; python3 age.py
