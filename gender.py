@@ -4,16 +4,19 @@ import tensorflow as tf
 from tensorflow import keras
 from make_numpy_dataset import make_dataset
 from utils import IMAGE_SIZE
+from models import make_alexnet_gender_model
 
 DATA_DIR = './train'
-EPOCHS=100
-BATCH_SIZE = 10
+EPOCHS=400
+BATCH_SIZE = 32
 TRAIN_TEST_SPLIT=0.8
-SAVE_DIR='train-gender-1/cp.ckpt'
+PATIENCE=50
+CHECKPOINT_PATH='gender-ckpt/alexnetlike-1/cp-{epoch:04d}.ckpt'
+CHECKPOINT_DIR=os.dirname(CHECKPOINT_PATH)
 TFBOARD_DIR='gender-logs'
 
 # check if the dataset has been created yet
-if not (os.path.exists('images.npy') and os.path.exists('ages.npy')):
+if not (os.path.exists('images.npy') and os.path.exists('gender.npy')):
     make_dataset(DATA_DIR)
 
 images =np.load('images.npy')
@@ -32,42 +35,21 @@ print(f'train_dataset={train_dataset}')
 print(f'test_dataset={test_dataset}')
 
 
-# this is a version of alexnet
-# copied and adjusted from https://towardsdatascience.com/implementing-alexnet-cnn-architecture-using-tensorflow-2-0-and-keras-2113e090ad98
-def make_alexnet_gender_model():
-    return keras.models.Sequential([
-        keras.layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=IMAGE_SIZE + [3]),
-        keras.layers.BatchNormalization(),
-        keras.layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
-        keras.layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
-        keras.layers.BatchNormalization(),
-        keras.layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
-        keras.layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-        keras.layers.BatchNormalization(),
-        keras.layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-        keras.layers.BatchNormalization(),
-        keras.layers.Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-        keras.layers.BatchNormalization(),
-        keras.layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
-        keras.layers.Flatten(),
-        keras.layers.Dense(4096, activation='relu'),
-        keras.layers.Dropout(0.5),
-        keras.layers.Dense(4096, activation='relu'),
-        keras.layers.Dropout(0.5),
-        keras.layers.Dense(1)
-    ])
-
 model=make_alexnet_gender_model()
 print(model.summary())
 
 ## callbacks
-checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(SAVE_DIR)
-early_stopping_callback =  tf.keras.callbacks.EarlyStopping( monitor='val_accuracy' , patience=10 )
+checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
+    filepath=CHECKPOINT_PATH,
+    save_weights_only=True,
+    monitor='val_accuracy',
+    save_best_only=True)
+early_stopping_callback =  tf.keras.callbacks.EarlyStopping( monitor='val_accuracy' , patience=PATIENCE )
 tensorboard_callback = tf.keras.callbacks.TensorBoard( log_dir=TFBOARD_DIR)
 
 model.compile(
     optimizer='adam',
-    loss=tf.keras.losses.BinaryCrossentropy(),
+    loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
     metrics=['accuracy']
 )
 
@@ -77,3 +59,4 @@ train_history=model.fit(
     validation_data=test_dataset,
     callbacks=[checkpoint_callback,tensorboard_callback,early_stopping_callback]
 )
+model.save_weights(os.path.join(CHECKPOINT_DIR, 'model_at_stop.ckpt'))

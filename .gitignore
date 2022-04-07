@@ -1,4 +1,4 @@
 env
-train/*
+train
 *.npy
 __pycache__

@@ -5,6 +5,7 @@ import tensorflow as tf
 from tensorflow import keras
 from make_numpy_dataset import make_dataset
 from utils import IMAGE_SIZE
+from models import make_alexnet_age_model
 
 DATA_DIR = './train'
 EPOCHS=100
@@ -13,31 +14,6 @@ TRAIN_TEST_SPLIT=0.8
 PATIENCE=30
 SAVE_DIR='train-age-1/cp.ckpt'
 TFBOARD_DIR='age-logs'
-
-# this is a version of alexnet
-# copied and adjusted from https://towardsdatascience.com/implementing-alexnet-cnn-architecture-using-tensorflow-2-0-and-keras-2113e090ad98
-def make_alexnet_age_model():
-    return keras.models.Sequential([
-        keras.layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=IMAGE_SIZE + [3]),
-        keras.layers.BatchNormalization(),
-        keras.layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
-        keras.layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
-        keras.layers.BatchNormalization(),
-        keras.layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
-        keras.layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-        keras.layers.BatchNormalization(),
-        keras.layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-        keras.layers.BatchNormalization(),
-        keras.layers.Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-        keras.layers.BatchNormalization(),
-        keras.layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
-        keras.layers.Flatten(),
-        keras.layers.Dense(4096, activation='relu'),
-        keras.layers.Dropout(0.5),
-        keras.layers.Dense(4096, activation='relu'),
-        keras.layers.Dropout(0.5),
-        keras.layers.Dense(1)
-    ])
 
 
 def main():
