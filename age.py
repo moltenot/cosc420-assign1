@@ -6,12 +6,12 @@ from utils import shuffle_and_split, make_callbacks
 from models import make_alexnet_age_model
 
 DATA_DIR = './train'
-EPOCHS = 100
+EPOCHS = 400
 BATCH_SIZE = 32
 TRAIN_TEST_SPLIT = 0.8
 PATIENCE = 30
 CHECKPOINT_PATH = 'age-ckpt/alexnetlike-1/cp-{epoch:04d}.ckpt'
-CHECKPOINT_DIR = os.dirname(CHECKPOINT_PATH)
+CHECKPOINT_DIR = os.path.dirname(CHECKPOINT_PATH)
 TFBOARD_DIR = 'age-logs'
 
 

@@ -3,3 +3,11 @@ train
 *.npy
 __pycache__
 pyvenv.cfg
+age-ckpt
+age-logs
+gender-ckpt
+gender-logs
+race-ckpt
+race-logs
+train-age-1
+train-gender-1

@@ -9,9 +9,9 @@ DATA_DIR = './train'
 EPOCHS = 400
 BATCH_SIZE = 32
 TRAIN_TEST_SPLIT = 0.8
-PATIENCE = 50
+PATIENCE = 30
 CHECKPOINT_PATH = 'gender-ckpt/alexnetlike-1/cp-{epoch:04d}.ckpt'
-CHECKPOINT_DIR = os.dirname(CHECKPOINT_PATH)
+CHECKPOINT_DIR = os.path.dirname(CHECKPOINT_PATH)
 TFBOARD_DIR = 'gender-logs'
 
 # check if the dataset has been created yet
@@ -35,7 +35,7 @@ checkpoint_callback, early_stopping_callback, tensorboard_callback = make_callba
     PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR)
 
 model.compile(
-    optimizer='adam',
+    optimizer=tf.keras.optimizers.Adam(learning_rate=5e-4),
     loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
     metrics=['accuracy']
 )
@@ -45,6 +45,7 @@ train_history = model.fit(
     epochs=EPOCHS,
     validation_data=test_dataset,
     callbacks=[checkpoint_callback,
-               tensorboard_callback, early_stopping_callback]
+               tensorboard_callback,
+               early_stopping_callback]
 )
 model.save_weights(os.path.join(CHECKPOINT_DIR, 'model_at_stop.ckpt'))
