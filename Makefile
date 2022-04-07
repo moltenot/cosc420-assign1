@@ -3,6 +3,13 @@
 test:
 	. ./env/bin/activate ; python3 run_predictor.py
 
+race:
+	. ./env/bin/activate ; python3 race.py
+
+race-tb:
+	. ./env/bin/activate ; tensorboard --logdir=race-logs
+
+
 age:
 	. ./env/bin/activate ; python3 age.py
 

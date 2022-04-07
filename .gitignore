@@ -2,3 +2,4 @@ env
 train
 *.npy
 __pycache__
+pyvenv.cfg
