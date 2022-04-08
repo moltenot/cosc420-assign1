@@ -106,14 +106,21 @@ def get_dataset(which_ds, batch_size, percent_train):
 
     return train_set, val_set
 
-
-def make_callbacks(PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR):
+"""
+Make the callbacks for to be attached to a model
+@param PATIENCE - the patitence for the early stopping callback
+@param CHECKPOINT_PATH - the path format for checkpoint saving
+@param TFBOARD_DIR - where to save the tensorboard events
+@param metric='val_accuracy' - what to check early stopping for, or saving checkpoints
+    since we only save checkpoints if they are better than before based on this metric
+"""
+def make_callbacks(PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR, metric='val_accuracy'):
     checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
         filepath=CHECKPOINT_PATH,
         save_weights_only=True,
-        monitor='val_accuracy',
+        monitor=metric,
         save_best_only=True)
     early_stopping_callback = tf.keras.callbacks.EarlyStopping(
-        monitor='val_accuracy', patience=PATIENCE)
+        monitor=metric, patience=PATIENCE)
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=TFBOARD_DIR)
     return checkpoint_callback, early_stopping_callback, tensorboard_callback

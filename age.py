@@ -23,7 +23,7 @@ def main():
 
     # callbacks
     checkpoint_callback, early_stopping_callback, tensorboard_callback = make_callbacks(
-        PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR)
+        PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR, metric='val_loss')
 
     model.compile(
         optimizer='adam',
