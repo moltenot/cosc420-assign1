@@ -20,10 +20,10 @@ def parse_image(filename):
     return age, gender, race, im
 
 
-def get_image_data_from_file(filename):
+def get_image_data_from_file(filename, image_size=IMAGE_SIZE):
     image_raw = tf.io.read_file(filename)
     im = tf.image.decode_jpeg(image_raw, channels=3)
-    im = tf.image.resize(im, IMAGE_SIZE) / 255
+    im = tf.image.resize(im, image_size) / 255
     return im
 
 
