@@ -1,4 +1,4 @@
-.PHONY: activate test
+.PHONY: activate test gender race age
 
 task1: race age gender
 
@@ -8,22 +8,11 @@ test:
 race:
 	. ./env/bin/activate ; python3 race.py
 
-race-tb:
-	. ./env/bin/activate ; tensorboard --logdir=race-logs
-
-
 age:
 	. ./env/bin/activate ; python3 age.py
 
-age-tb:
-	. ./env/bin/activate ; tensorboard --logdir=age-logs
-
-
 gender:
 	. ./env/bin/activate ; python3 gender.py
-
-gender-tb:
-	. ./env/bin/activate ; tensorboard --logdir=gender-logs
 
 dataset:
 	. ./env/bin/activate ; python3 make_numpy_dataset.py

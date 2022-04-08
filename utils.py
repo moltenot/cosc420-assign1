@@ -1,5 +1,7 @@
+import os
 import numpy as np
 import tensorflow as tf
+from sklearn.model_selection import train_test_split
 
 IMAGE_SIZE = [100, 100]
 
@@ -53,28 +55,56 @@ def get_data_from_imagepaths(image_paths):
     return ages, images, races, genders
 
 
-def make_augment_model():
-    return tf.keras.Sequential([
-        tf.keras.layers.RandomFlip("horizontal"),
-        tf.keras.layers.RandomRotation(0.2),
-    ])
+def get_settings(MODEL_PATH):
+    DATA_DIR = './train'
+    EPOCHS = 400
+    BATCH_SIZE = 32
+    TRAIN_TEST_SPLIT = 0.8
+    PATIENCE = 20
+    CHECKPOINT_DIR = os.path.join(MODEL_PATH, 'ckpt')
+    CHECKPOINT_PATH = CHECKPOINT_DIR + "/cp-{epoch:04d}.ckpt"
+    TFBOARD_DIR = os.path.join(MODEL_PATH, 'logs')
+    return DATA_DIR, EPOCHS, BATCH_SIZE, TRAIN_TEST_SPLIT, PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR
 
 
-def shuffle_and_split(dataset, BATCH_SIZE, TRAIN_TEST_SPLIT, augment=False):
-    dataset = dataset.shuffle(buffer_size=1000).batch(BATCH_SIZE)
+def get_dataset(which_ds, batch_size, percent_train):
+    # I need two datagenerators since for the age model, the imageDataGenerator
+    # requires that the unique classes in the validation and training label sets
+    # be identical. This was not the case since I guess there is not 116 year olds
+    # so it would break
+    # to deal with this I am using sklearn to split and shufle the data instead
+    datagen_train = tf.keras.preprocessing.image.ImageDataGenerator(
+        horizontal_flip=True,
+        rotation_range=20,
+    )
+    datagen_test = tf.keras.preprocessing.image.ImageDataGenerator(
+        horizontal_flip=True,
+        rotation_range=20,
+    )
 
-    # split into training and testing
-    number_for_training = int(dataset.cardinality().numpy() * TRAIN_TEST_SPLIT)
-    train_dataset = dataset.take(number_for_training)
-    test_dataset = dataset.skip(number_for_training)
+    images = np.load('images.npy')
 
-    if augment:  # https://www.tensorflow.org/tutorials/images/data_augmentation
-        print('augmenting training dataset')
-        augmentation = make_augment_model()
-        train_dataset = train_dataset.map(lambda x, y: (augmentation(x, training=True), y),
-                                          num_parallel_calls=tf.data.AUTOTUNE)
+    if which_ds == 'gender':
+        labels = np.load('genders.npy')
+    elif which_ds == 'race':
+        labels = np.load('races.npy')
+    elif which_ds == 'age':
+        labels = np.round(np.load('ages.npy')).astype(int)
 
-    return train_dataset, test_dataset
+    # shuffle and split
+    x_train, x_test, y_train, y_test = train_test_split(
+        images, labels, test_size=1-percent_train, random_state=47
+    )
+
+    datagen_train.fit(x_train)
+    datagen_test.fit(x_test)
+
+    train_set = datagen_train.flow(
+        x_train, y_train, batch_size=batch_size)
+    val_set = datagen_test.flow(
+        x_test, y_test, batch_size=batch_size)
+
+    return train_set, val_set
 
 
 def make_callbacks(PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR):
