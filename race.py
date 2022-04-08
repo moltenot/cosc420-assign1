@@ -11,7 +11,7 @@ EPOCHS = 400
 BATCH_SIZE = 32
 TRAIN_TEST_SPLIT = 0.8
 PATIENCE = 30
-CHECKPOINT_PATH = 'race-ckpt/alexnetlike-1/cp-{epoch:04d}.ckpt'
+CHECKPOINT_PATH = 'race-ckpt/alexnetlike-2/cp-{epoch:04d}.ckpt'
 CHECKPOINT_DIR = os.path.dirname(CHECKPOINT_PATH)
 TFBOARD_DIR = 'race-logs'
 
@@ -25,7 +25,7 @@ races = np.load('races.npy')
 # turn the numpy dataset into a tensorflow one
 dataset = tf.data.Dataset.from_tensor_slices((images, races))
 train_dataset, test_dataset = shuffle_and_split(
-    dataset, BATCH_SIZE, TRAIN_TEST_SPLIT)
+    dataset, BATCH_SIZE, TRAIN_TEST_SPLIT, augment=True)
 
 # make the model
 model = make_alexnet_race_model()

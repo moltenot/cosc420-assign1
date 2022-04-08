@@ -53,13 +53,27 @@ def get_data_from_imagepaths(image_paths):
     return ages, images, races, genders
 
 
-def shuffle_and_split(dataset, BATCH_SIZE, TRAIN_TEST_SPLIT):
-    dataset = dataset.shuffle(buffer_size=100).batch(BATCH_SIZE)
+def make_augment_model():
+    return tf.keras.Sequential([
+        tf.keras.layers.RandomFlip("horizontal"),
+        tf.keras.layers.RandomRotation(0.2),
+    ])
+
+
+def shuffle_and_split(dataset, BATCH_SIZE, TRAIN_TEST_SPLIT, augment=False):
+    dataset = dataset.shuffle(buffer_size=1000).batch(BATCH_SIZE)
 
     # split into training and testing
     number_for_training = int(dataset.cardinality().numpy() * TRAIN_TEST_SPLIT)
     train_dataset = dataset.take(number_for_training)
     test_dataset = dataset.skip(number_for_training)
+
+    if augment:  # https://www.tensorflow.org/tutorials/images/data_augmentation
+        print('augmenting training dataset')
+        augmentation = make_augment_model()
+        train_dataset = train_dataset.map(lambda x, y: (augmentation(x, training=True), y),
+                                          num_parallel_calls=tf.data.AUTOTUNE)
+
     return train_dataset, test_dataset
 
 

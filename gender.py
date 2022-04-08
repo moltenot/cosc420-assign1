@@ -10,7 +10,7 @@ EPOCHS = 400
 BATCH_SIZE = 32
 TRAIN_TEST_SPLIT = 0.8
 PATIENCE = 30
-CHECKPOINT_PATH = 'gender-ckpt/alexnetlike-1/cp-{epoch:04d}.ckpt'
+CHECKPOINT_PATH = 'gender-ckpt/alexnetlike-2/cp-{epoch:04d}.ckpt'
 CHECKPOINT_DIR = os.path.dirname(CHECKPOINT_PATH)
 TFBOARD_DIR = 'gender-logs'
 
@@ -24,7 +24,7 @@ genders = np.load('genders.npy')
 # turn the numpy dataset into a tensorflow one
 dataset = tf.data.Dataset.from_tensor_slices((images, genders))
 train_dataset, test_dataset = shuffle_and_split(
-    dataset, BATCH_SIZE, TRAIN_TEST_SPLIT)
+    dataset, BATCH_SIZE, TRAIN_TEST_SPLIT, augment=True)
 
 
 model = make_alexnet_gender_model()

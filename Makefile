@@ -1,5 +1,7 @@
 .PHONY: activate test
 
+task1: race age gender
+
 test:
 	. ./env/bin/activate ; python3 run_predictor.py
 
