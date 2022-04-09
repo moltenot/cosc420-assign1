@@ -2,11 +2,11 @@ import os
 import tensorflow as tf
 from make_numpy_dataset import make_dataset
 from utils import get_dataset, make_callbacks, get_settings
-from models import make_alexnet_race_model
+from models import make_alexnet_race_model, make_vgg_race_model
 
 # change this with each iteration
 # the weights will be stored here under subdir 'ckpt' and tensorboard logs under 'logs'
-MODEL_PATH = 'race/alexnetlike-3'
+MODEL_PATH = 'race/vgg-1'
 
 # get these settings, which are share among the age, race and gender models
 DATA_DIR, EPOCHS, BATCH_SIZE, TRAIN_TEST_SPLIT, PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR = get_settings(
@@ -20,10 +20,10 @@ if not (os.path.exists('images.npy') and os.path.exists('races.npy')):
 
 # get the training and validation datasets. These will be augmented with horizontal
 # flipping and some rotation
-train_dataset, test_dataset = get_dataset('race', BATCH_SIZE, TRAIN_TEST_SPLIT)
+train_dataset, test_dataset = get_dataset('race', BATCH_SIZE, TRAIN_TEST_SPLIT, vgg=True)
 
 # make the model
-model = make_alexnet_race_model()
+model = make_vgg_race_model()
 
 # callbacks
 checkpoint_callback, early_stopping_callback, tensorboard_callback = make_callbacks(

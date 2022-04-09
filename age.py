@@ -1,11 +1,11 @@
 import os
 from make_numpy_dataset import make_dataset
 from utils import get_dataset, make_callbacks, get_settings
-from models import make_alexnet_age_model
+from models import make_alexnet_age_model, make_vgg_age_model
 
 # change this with each iteration
 # the weights will be stored here under subdir 'ckpt' and tensorboard logs under 'logs'
-MODEL_PATH = 'age/alexnetlike-3'
+MODEL_PATH = 'age/vgg-1'
 
 # get these settings, which are share among the age, race and gender models
 DATA_DIR, EPOCHS, BATCH_SIZE, TRAIN_TEST_SPLIT, PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR = get_settings(
@@ -19,9 +19,9 @@ if not (os.path.exists('images.npy') and os.path.exists('ages.npy')):
 # get the training and validation datasets. These will be augmented with horizontal
 # flipping and some rotation
 train_dataset, test_dataset = get_dataset(
-    'age', BATCH_SIZE, TRAIN_TEST_SPLIT)
+    'age', BATCH_SIZE, TRAIN_TEST_SPLIT, vgg=True)
 
-model = make_alexnet_age_model()
+model = make_vgg_age_model()
 
 # callbacks
 checkpoint_callback, early_stopping_callback, tensorboard_callback = make_callbacks(

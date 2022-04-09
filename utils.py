@@ -88,19 +88,20 @@ def get_settings(MODEL_PATH):
     EPOCHS = 400
     BATCH_SIZE = 32
     TRAIN_TEST_SPLIT = 0.8
-    PATIENCE = 20
+    PATIENCE = 5
     CHECKPOINT_DIR = os.path.join(MODEL_PATH, 'ckpt')
     CHECKPOINT_PATH = CHECKPOINT_DIR + "/cp-{epoch:04d}.ckpt"
     TFBOARD_DIR = os.path.join(MODEL_PATH, 'logs')
     return DATA_DIR, EPOCHS, BATCH_SIZE, TRAIN_TEST_SPLIT, PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR
 
 
-def get_dataset(which_ds, batch_size, percent_train):
+def get_dataset(which_ds, batch_size, percent_train, vgg=False):
     """returns datasets with augmented images object for the training and validation data
     @param which_ds - String - either 'age' or 'gender' or 'race'
     @param batch_size - Int - how big to batch the datasets
     @param percent_train - Float - how much to keep for the training set. 
         i.e. 0.8 would be 20% validation and 80% training
+    @param vgg=False - Boolean - set to true to run vgg preprocessing on the images
 
     @returns train_set, val_set
         train_set - tf.data.Dataset object for training
@@ -121,7 +122,10 @@ def get_dataset(which_ds, batch_size, percent_train):
         rotation_range=20,
     )
 
-    images = np.load('images.npy')
+    if vgg:
+        images = np.load('vgg-images.npy')
+    else:
+        images = np.load('images.npy')
 
     if which_ds == 'gender':
         labels = np.load('genders.npy')

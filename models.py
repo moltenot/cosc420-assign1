@@ -77,6 +77,49 @@ def make_alexnet_age_model():
         layers.Dense(1)
     ])
 
+def get_vgg_base_model():
+    base_model=tf.keras.applications.VGG16(
+        include_top=False,
+        weights='imagenet',
+        input_shape=(100,100,3)
+    )
+    base_model.trainable=False 
+    return base_model
+
+
+def make_vgg_age_model():
+    return tf.keras.models.Sequential([
+        get_vgg_base_model(),
+        layers.Flatten(),
+        layers.Dense(4096, activation='relu'),
+        layers.Dropout(0.5),
+        layers.Dense(4096, activation='relu'),
+        layers.Dropout(0.5),
+        layers.Dense(1)
+])
+
+def make_vgg_race_model():
+    return tf.keras.models.Sequential([
+        get_vgg_base_model(),
+        layers.Flatten(),
+        layers.Dense(4096, activation='relu'),
+        layers.Dropout(0.5),
+        layers.Dense(4096, activation='relu'),
+        layers.Dropout(0.5),
+        layers.Dense(5, activation='softmax')
+    ])
+
+
+def make_vgg_gender_model():
+    return tf.keras.models.Sequential([
+        get_vgg_base_model(),
+        layers.Flatten(),
+        layers.Dense(4096, activation='relu'),
+        layers.Dropout(0.5),
+        layers.Dense(4096, activation='relu'),
+        layers.Dropout(0.5),
+        layers.Dense(2, activation='softmax')
+    ])
 
 
 #################### GAN MODELS ####################
