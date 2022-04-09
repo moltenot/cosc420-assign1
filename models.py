@@ -4,6 +4,9 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from utils import IMAGE_SIZE
 
+
+#################### TASK 1 MODELS ####################
+
 # the following models are modified versions of alexnet from this link
 # copied and adjusted from https://towardsdatascience.com/implementing-alexnet-cnn-architecture-using-tensorflow-2-0-and-keras-2113e090ad98
 def make_alexnet_gender_model():
@@ -75,6 +78,9 @@ def make_alexnet_age_model():
         keras.layers.Dense(1)
     ])
 
+
+
+#################### GAN MODELS ####################
 
 def make_basic_generator_model(): # adjusted for color image
     model = tf.keras.Sequential()

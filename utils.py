@@ -7,10 +7,16 @@ IMAGE_SIZE = [100, 100]
 
 
 def parse_image(filename):
+    """returns the image and label data for a specific filepath
+    @param filename - String file to parse
+
+    @returns age, gender, race, image - all as tensors
+    """
     im = get_image_data_from_file(filename)
 
     # parse the filename
     parts = tf.strings.split(tf.strings.split(filename, '/')[2], '_')
+
     age = tf.strings.to_number(parts[0])
     gender = tf.one_hot(tf.strings.to_number(parts[1],
                                              out_type=tf.dtypes.int32), 2)
@@ -21,6 +27,13 @@ def parse_image(filename):
 
 
 def get_image_data_from_file(filename, image_size=IMAGE_SIZE):
+    """Parse specifically the image data, resizing to the image_size parameter
+    This will rescale the image to have float pixels in the range [0,1]
+    @param filename - String - file to parse
+    @param image_size - [int, int] - size of the image data to return
+
+    @returns tensor for the image of shape (image_size[0], image_size[1], 3)
+    """
     image_raw = tf.io.read_file(filename)
     im = tf.image.decode_jpeg(image_raw, channels=3)
     im = tf.image.resize(im, image_size) / 255
@@ -28,6 +41,15 @@ def get_image_data_from_file(filename, image_size=IMAGE_SIZE):
 
 
 def get_data_from_imagepaths(image_paths):
+    """get label and image data from a list of imagepaths
+    @param - image_paths - string[] - list of image paths
+
+    @returns age, images, races, genders
+        age - np array of shape (None, )
+        image - np array of shape (None, IMAGE_SIZE[0], IMAGE_SIZE[1], 3)
+        races - np array of shape (None, 5)
+        genders - np array of shape (None, 2)
+    """
     ages = []
     images = []
     races = []
@@ -56,6 +78,12 @@ def get_data_from_imagepaths(image_paths):
 
 
 def get_settings(MODEL_PATH):
+    """centralized some of the hyperparameters for age, gender and race training
+    @param - MODEL_PATH - String-  the path to store checkpoints and tensorboard events in
+
+    @returns - DATA_DIR, EPOCHS, BATCH_SIZE, TRAIN_TEST_SPLIT, PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR
+        which are to be used in training each model
+    """
     DATA_DIR = './train'
     EPOCHS = 400
     BATCH_SIZE = 32
@@ -68,6 +96,17 @@ def get_settings(MODEL_PATH):
 
 
 def get_dataset(which_ds, batch_size, percent_train):
+    """returns datasets with augmented images object for the training and validation data
+    @param which_ds - String - either 'age' or 'gender' or 'race'
+    @param batch_size - Int - how big to batch the datasets
+    @param percent_train - Float - how much to keep for the training set. 
+        i.e. 0.8 would be 20% validation and 80% training
+
+    @returns train_set, val_set
+        train_set - tf.data.Dataset object for training
+        val_set - tf.data.Dataset object for validation
+    """
+
     # I need two datagenerators since for the age model, the imageDataGenerator
     # requires that the unique classes in the validation and training label sets
     # be identical. This was not the case since I guess there is not 116 year olds
@@ -106,15 +145,18 @@ def get_dataset(which_ds, batch_size, percent_train):
 
     return train_set, val_set
 
-"""
-Make the callbacks for to be attached to a model
-@param PATIENCE - the patitence for the early stopping callback
-@param CHECKPOINT_PATH - the path format for checkpoint saving
-@param TFBOARD_DIR - where to save the tensorboard events
-@param metric='val_accuracy' - what to check early stopping for, or saving checkpoints
-    since we only save checkpoints if they are better than before based on this metric
-"""
+
 def make_callbacks(PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR, metric='val_accuracy'):
+    """
+    Make the callbacks for to be attached to a model
+    @param PATIENCE - the patitence for the early stopping callback
+    @param CHECKPOINT_PATH - the path format for checkpoint saving
+    @param TFBOARD_DIR - where to save the tensorboard events
+    @param metric='val_accuracy' - what to check early stopping for, or saving checkpoints
+        since we only save checkpoints if they are better than before based on this metric
+
+    @returns checkpoint_callback, early_stopping_callback, tensorboard_callback 
+    """
     checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
         filepath=CHECKPOINT_PATH,
         save_weights_only=True,
