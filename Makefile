@@ -19,3 +19,6 @@ dataset:
 
 clean_ds:
 	. ./env/bin/activate ; python3 clean_dataset.py
+
+gan:
+	. ./env/bin/activate ; python3 gan.py

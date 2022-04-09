@@ -42,7 +42,7 @@ discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 
 
 # make checkpointing system
-checkpoint_dir = './gan-checkpoints'
+checkpoint_dir = './gan-checkpoints-2'
 checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  discriminator_optimizer=discriminator_optimizer,
@@ -50,7 +50,7 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  discriminator=discriminator)
 
 # training loop
-EPOCHS = 50
+EPOCHS = 400
 noise_dim = 100
 num_examples_to_generate = 16
 seed = tf.random.normal([num_examples_to_generate, noise_dim])
@@ -113,7 +113,7 @@ def generate_and_save_images(model, epoch, test_input):
       plt.axis('off')
 
   plt.savefig('image_at_epoch_{:04d}.png'.format(epoch))
-  plt.show()
+  # plt.show() # uncomment this if you want blocked training
 
 
 if __name__=='__main__':
