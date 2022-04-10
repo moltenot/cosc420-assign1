@@ -88,7 +88,7 @@ def get_settings(MODEL_PATH):
     EPOCHS = 400
     BATCH_SIZE = 32
     TRAIN_TEST_SPLIT = 0.8
-    PATIENCE = 5
+    PATIENCE = 20
     CHECKPOINT_DIR = os.path.join(MODEL_PATH, 'ckpt')
     CHECKPOINT_PATH = CHECKPOINT_DIR + "/cp-{epoch:04d}.ckpt"
     TFBOARD_DIR = os.path.join(MODEL_PATH, 'logs')
