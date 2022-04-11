@@ -95,6 +95,10 @@ def make_vgg_age_model():
         layers.Dropout(0.5),
         layers.Dense(4096, activation='relu'),
         layers.Dropout(0.5),
+        layers.Dense(4096, activation='relu'),
+        layers.Dropout(0.5),
+        layers.Dense(4096, activation='relu'),
+        layers.Dropout(0.5),
         layers.Dense(1)
 ])
 
@@ -102,6 +106,10 @@ def make_vgg_race_model():
     return tf.keras.models.Sequential([
         get_vgg_base_model(),
         layers.Flatten(),
+        layers.Dense(4096, activation='relu'),
+        layers.Dropout(0.5),
+        layers.Dense(4096, activation='relu'),
+        layers.Dropout(0.5),
         layers.Dense(4096, activation='relu'),
         layers.Dropout(0.5),
         layers.Dense(4096, activation='relu'),
@@ -114,6 +122,10 @@ def make_vgg_gender_model():
     return tf.keras.models.Sequential([
         get_vgg_base_model(),
         layers.Flatten(),
+        layers.Dense(4096, activation='relu'),
+        layers.Dropout(0.5),
+        layers.Dense(4096, activation='relu'),
+        layers.Dropout(0.5),
         layers.Dense(4096, activation='relu'),
         layers.Dropout(0.5),
         layers.Dense(4096, activation='relu'),

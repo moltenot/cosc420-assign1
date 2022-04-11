@@ -6,7 +6,7 @@ from models import make_alexnet_gender_model, make_vgg_gender_model
 
 # change this with each iteration
 # the weights will be stored here under subdir 'ckpt' and tensorboard logs under 'logs'
-MODEL_PATH = 'gender/vgg-1'  
+MODEL_PATH = 'gender/vgg-2'  
 
 # get these settings, which are share among the age, race and gender models
 DATA_DIR, EPOCHS, BATCH_SIZE, TRAIN_TEST_SPLIT, PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR = get_settings(
