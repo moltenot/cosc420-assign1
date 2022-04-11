@@ -148,6 +148,10 @@ def get_dataset(which_ds, batch_size, percent_train, vgg=False):
 
     return train_set, val_set
 
+def get_optimizer():
+    """returns the adam optimizer to use for the age, gender and race models
+    """
+    return tf.keras.optimizers.Adam(learning_rate=1e-4)
 
 def make_callbacks(PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR, metric='val_accuracy'):
     """

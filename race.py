@@ -1,12 +1,12 @@
 import os
 import tensorflow as tf
 from make_numpy_dataset import make_dataset
-from utils import get_dataset, make_callbacks, get_settings
+from utils import get_dataset, make_callbacks, get_settings, get_optimizer
 from models import make_alexnet_race_model, make_vgg_race_model
 
 # change this with each iteration
 # the weights will be stored here under subdir 'ckpt' and tensorboard logs under 'logs'
-MODEL_PATH = 'race/vgg-3'
+MODEL_PATH = 'race/vgg-4'
 
 # get these settings, which are share among the age, race and gender models
 DATA_DIR, EPOCHS, BATCH_SIZE, TRAIN_TEST_SPLIT, PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR = get_settings(
@@ -30,7 +30,7 @@ checkpoint_callback, early_stopping_callback, tensorboard_callback = make_callba
     PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR)
 
 model.compile(
-    optimizer=tf.keras.optimizers.Adam(learning_rate=5e-4),
+    optimizer=get_optimizer(),
     loss='categorical_crossentropy',
     metrics=['accuracy']
 )
