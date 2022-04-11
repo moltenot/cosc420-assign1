@@ -86,7 +86,7 @@ def get_settings(MODEL_PATH):
     """
     DATA_DIR = './train'
     EPOCHS = 400
-    BATCH_SIZE = 32
+    BATCH_SIZE = 80
     TRAIN_TEST_SPLIT = 0.8
     PATIENCE = 20
     CHECKPOINT_DIR = os.path.join(MODEL_PATH, 'ckpt')
@@ -117,10 +117,9 @@ def get_dataset(which_ds, batch_size, percent_train, vgg=False):
         horizontal_flip=True,
         rotation_range=20,
     )
-    datagen_test = tf.keras.preprocessing.image.ImageDataGenerator(
-        horizontal_flip=True,
-        rotation_range=20,
-    )
+    
+    # don't have augmentation on the validation data https://stackoverflow.com/a/48031128
+    datagen_test = tf.keras.preprocessing.image.ImageDataGenerator()
 
     if vgg:
         images = np.load('vgg-images.npy')
