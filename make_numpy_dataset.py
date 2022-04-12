@@ -7,7 +7,7 @@ import numpy as np
 DATA_DIR = './train'
 
 
-def make_dataset(DATA_DIR):
+def make_dataset():
     image_paths = [os.path.join(DATA_DIR, file)
                    for file in os.listdir(DATA_DIR)]
     ages, images, races, genders = get_data_from_imagepaths(image_paths)
@@ -30,8 +30,10 @@ def make_dataset(DATA_DIR):
         return np.array([(i*255).astype(int) for i in images])
 
 
-# makes images that are much smaller, just for the GAN
 def make_gan_images(image_size=[28, 28]):
+    """make images that are much smaller, just for the GAN
+    @param image_size - int[] - size of the images
+    """
     image_paths = [os.path.join(DATA_DIR, file)
                    for file in os.listdir(DATA_DIR)]
     count = 0
@@ -44,4 +46,8 @@ def make_gan_images(image_size=[28, 28]):
 
 
 if __name__ == '__main__':
-    make_dataset(DATA_DIR)
+    print('making task1 dataset')
+    make_dataset()
+
+    print('making task2 dataset')
+    make_gan_images()
