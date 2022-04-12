@@ -28,7 +28,7 @@ def make_alexnet_gender_model():
         layers.Dropout(0.5),
         layers.Dense(4096, activation='relu'),
         layers.Dropout(0.5),
-        layers.Dense(2)
+        layers.Dense(2, activation='softmax')
     ])
 
 def make_alexnet_race_model():
