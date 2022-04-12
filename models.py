@@ -95,10 +95,6 @@ def make_vgg_age_model():
         layers.Dropout(0.5),
         layers.Dense(4096, activation='relu'),
         layers.Dropout(0.5),
-        layers.Dense(4096, activation='relu'),
-        layers.Dropout(0.5),
-        layers.Dense(4096, activation='relu'),
-        layers.Dropout(0.5),
         layers.Dense(1)
 ])
 
@@ -106,10 +102,6 @@ def make_vgg_race_model():
     return tf.keras.models.Sequential([
         get_vgg_base_model(),
         layers.Flatten(),
-        layers.Dense(4096, activation='relu'),
-        layers.Dropout(0.5),
-        layers.Dense(4096, activation='relu'),
-        layers.Dropout(0.5),
         layers.Dense(4096, activation='relu'),
         layers.Dropout(0.5),
         layers.Dense(4096, activation='relu'),
@@ -126,15 +118,43 @@ def make_vgg_gender_model():
         layers.Dropout(0.5),
         layers.Dense(4096, activation='relu'),
         layers.Dropout(0.5),
-        layers.Dense(4096, activation='relu'),
-        layers.Dropout(0.5),
-        layers.Dense(4096, activation='relu'),
-        layers.Dropout(0.5),
         layers.Dense(2, activation='softmax')
     ])
 
 
 #################### GAN MODELS ####################
+
+def make_generator_model():
+    model = tf.keras.models.Sequential()
+
+    model.add(layers.Dense(7*7*256, use_bias=False, input_shape=(100,)))
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+
+    model.add(layers.Reshape((7, 7, 256)))
+    assert model.output_shape == (None, 7, 7, 256)  # Note: None is the batch size
+
+    model.add(layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False))
+    assert model.output_shape == (None, 7, 7, 128)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+
+    model.add(layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False))
+    assert model.output_shape == (None, 14, 14, 64)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+
+    model.add(layers.Conv2DTranspose(32, (5, 5), strides=(2, 2), padding='same', use_bias=False))
+    assert model.output_shape == (None, 28, 28, 32)
+
+    model.add(layers.Conv2DTranspose(16, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
+    assert model.output_shape == (None, 56, 56, 16)
+
+    # get back to a 100*100*3 image
+    model.add(layers.Conv2DTranspose(3, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
+    print(model.summary())
+    assert model.output_shape == (None, 100, 100, 3)
+    return model
 
 def make_basic_generator_model(): # adjusted for color image
     model = tf.keras.Sequential()

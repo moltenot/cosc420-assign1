@@ -6,7 +6,7 @@ from models import make_alexnet_gender_model, make_vgg_gender_model
 
 # change this with each iteration
 # the weights will be stored here under subdir 'ckpt' and tensorboard logs under 'logs'
-MODEL_PATH = 'gender/alexnetlike-1-1'  
+MODEL_PATH = 'gender/vgg-5'  
 
 # get these settings, which are share among the age, race and gender models
 DATA_DIR, EPOCHS, BATCH_SIZE, TRAIN_TEST_SPLIT, PATIENCE, CHECKPOINT_PATH, TFBOARD_DIR = get_settings(
@@ -20,9 +20,9 @@ if not (os.path.exists('images.npy') and os.path.exists('genders.npy')):
 # get the training and validation datasets. These will be augmented with horizontal
 # flipping and some rotation
 train_dataset, test_dataset = get_dataset(
-    'gender', BATCH_SIZE, TRAIN_TEST_SPLIT)
+    'gender', BATCH_SIZE, TRAIN_TEST_SPLIT, vgg=True)
 
-model = make_alexnet_gender_model()
+model = make_vgg_gender_model()
 
 # callbacks
 checkpoint_callback, early_stopping_callback, tensorboard_callback = make_callbacks(
