@@ -1,13 +1,14 @@
 import os
 from matplotlib import pyplot as plt
 import tensorflow as tf
-from models import make_basic_generator_model
+from models import make_basic_generator_model, make_generator_model
 
+big_images = True
 
 #################### get the model ####################
-generator = make_basic_generator_model()
+generator = make_generator_model() if big_images else make_basic_generator_model()
 
-checkpoint_dir = './gan-checkpoints/run-3'
+checkpoint_dir = 'gan-checkpoints/big-gan-1' if big_images else './gan-checkpoints/run-3'
 checkpoint = tf.train.Checkpoint(generator=generator)
 
 checkpoint.restore(tf.train.latest_checkpoint(checkpoint_dir))

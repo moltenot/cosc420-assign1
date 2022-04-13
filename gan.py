@@ -4,24 +4,37 @@
 import tensorflow as tf
 import numpy as np
 import os
-from make_numpy_dataset import make_dataset
+from make_numpy_dataset import make_dataset, make_gan_images
 import matplotlib.pyplot as plt
 import time
-from models import make_basic_discriminator_model, make_basic_generator_model
+from models import make_basic_discriminator_model,make_basic_generator_model, make_generator_model, make_alexnet_age_model
 
 BATCH_SIZE = 32
 
-discriminator = make_basic_discriminator_model()
-generator = make_basic_generator_model()
+big_images=True # set to false if you want 28*28 small images
+
+if big_images:
+    discriminator=make_alexnet_age_model()
+    generator=make_generator_model()
+else:
+    discriminator = make_basic_discriminator_model()
+    generator = make_basic_generator_model()
 
 
-# create gan-images if it doesn't exist
-if not os.path.exists('gan-images.npy'):
-    make_dataset()
+if big_images:
+    if not os.path.exists('images.npy'):
+        make_dataset()
 
-# this is a long numpy array of images of shape (28,28,3) with float values
-# in the range [0,1]
-images = np.load('gan-images.npy')
+    images = np.load('images.npy')
+
+else:
+    # create gan-images if it doesn't exist
+    if not os.path.exists('gan-images.npy'):
+        make_gan_images()
+
+    # this is a long numpy array of images of shape (28,28,3) with float values
+    # in the range [0,1]
+    images = np.load('gan-images.npy')
 
 
 # batch and shuffle images
@@ -49,7 +62,7 @@ discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 
 
 # make checkpointing system
-checkpoint_dir = './gan-checkpoints-2'
+checkpoint_dir = './gan-checkpoints-3'
 checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  discriminator_optimizer=discriminator_optimizer,

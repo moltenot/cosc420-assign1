@@ -125,34 +125,37 @@ def make_vgg_gender_model():
 #################### GAN MODELS ####################
 
 def make_generator_model():
+    """make a generator that takes an input of dimension 100, and produces an color image
+    100 px by 100px
+    """
     model = tf.keras.models.Sequential()
 
-    model.add(layers.Dense(7*7*256, use_bias=False, input_shape=(100,)))
+    model.add(layers.Dense(5*5*256, use_bias=False, input_shape=(100,)))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
-    model.add(layers.Reshape((7, 7, 256)))
-    assert model.output_shape == (None, 7, 7, 256)  # Note: None is the batch size
+    model.add(layers.Reshape((5, 5, 256)))
+    assert model.output_shape == (None, 5, 5, 256)
 
     model.add(layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False))
-    assert model.output_shape == (None, 7, 7, 128)
+    assert model.output_shape == (None, 5, 5, 128)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
-    model.add(layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    assert model.output_shape == (None, 14, 14, 64)
+    model.add(layers.Conv2DTranspose(64, (5, 5), strides=(1, 1), padding='same', use_bias=False))
+    assert model.output_shape == (None, 5, 5, 64)
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
     model.add(layers.Conv2DTranspose(32, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    assert model.output_shape == (None, 28, 28, 32)
+    assert model.output_shape == (None, 10, 10, 32)
 
-    model.add(layers.Conv2DTranspose(16, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
-    assert model.output_shape == (None, 56, 56, 16)
 
-    # get back to a 100*100*3 image
-    model.add(layers.Conv2DTranspose(3, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
-    print(model.summary())
+    model.add(layers.Conv2DTranspose(16, (5, 5), strides=(5, 5), padding='same', use_bias=False))
+    assert model.output_shape == (None, 50,50, 16)
+
+
+    model.add(layers.Conv2DTranspose(3, (5,5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
     assert model.output_shape == (None, 100, 100, 3)
     return model
 
