@@ -62,7 +62,7 @@ discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 
 
 # make checkpointing system
-checkpoint_dir = './gan-checkpoints-3'
+checkpoint_dir = './big-gan-2'
 checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
 checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  discriminator_optimizer=discriminator_optimizer,
@@ -71,7 +71,7 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
 
 # training loop
 EPOCHS = 400
-noise_dim = 100
+noise_dim = 1300
 num_examples_to_generate = 16
 seed = tf.random.normal([num_examples_to_generate, noise_dim])
 

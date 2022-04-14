@@ -130,7 +130,7 @@ def make_generator_model():
     """
     model = tf.keras.models.Sequential()
 
-    model.add(layers.Dense(5*5*256, use_bias=False, input_shape=(100,)))
+    model.add(layers.Dense(5*5*256, use_bias=False, input_shape=(1300,)))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
